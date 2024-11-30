@@ -185,17 +185,6 @@
             margin-top: 20px;
         }
 
-        .logout-button {
-            background-color: #FF4B5C;
-            color: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            border: none;
-            width: 100%;
-            margin-top: 20px;
-        }
-
     </style>
 </head>
 <body>
@@ -210,30 +199,13 @@
             <button onclick="toggleMenu()">✕</button>
         </header>
         <ul>
-            <li><b>Tên người dùng:</b> <span id="menuUsername"></span></li>
+            <li><b>Tên người dùng:</b> <span id="menuUsername">Chưa đăng nhập</span></li>
             <li onclick="showHistory()">Lịch sử</li>
             <li id="dateTime"></li>
-            <li><button onclick="logout()">Đăng xuất</button></li>
         </ul>
     </div>
 
     <div class="main-container">
-        <div class="form-container" id="loginForm">
-            <h1>Đăng nhập</h1>
-            <input type="text" id="username" placeholder="Tên đăng nhập">
-            <input type="password" id="password" placeholder="Mật khẩu">
-            <button onclick="login()">Đăng nhập</button>
-            <button onclick="showRegister()">Tạo tài khoản</button>
-        </div>
-
-        <div class="form-container" id="registerForm" style="display: none;">
-            <h1>Tạo tài khoản</h1>
-            <input type="text" id="newUsername" placeholder="Tên đăng nhập">
-            <input type="password" id="newPassword" placeholder="Mật khẩu">
-            <button onclick="register()">Tạo tài khoản</button>
-            <button onclick="showLogin()">Quay lại đăng nhập</button>
-        </div>
-
         <div class="main-content" id="webMain">
             <textarea id="content" placeholder="Nhập nội dung của bạn..."></textarea>
             <button onclick="saveContent()">Lưu</button>
@@ -253,8 +225,6 @@
     <script>
         const menu = document.getElementById("menu");
         const mainTitle = document.getElementById("mainTitle");
-        const loginForm = document.getElementById("loginForm");
-        const registerForm = document.getElementById("registerForm");
         const webMain = document.getElementById("webMain");
         const historyModal = document.getElementById("historyModal");
         const historyList = document.getElementById("historyList");
@@ -277,57 +247,6 @@
 
         function closeHistory() {
             historyModal.classList.remove("active");
-        }
-
-        function login() {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-
-            if (username && password) {
-                const storedUsername = localStorage.getItem("username");
-                const storedPassword = localStorage.getItem("password");
-                if (username === storedUsername && password === storedPassword) {
-                    localStorage.setItem("loggedIn", "true");
-                    document.getElementById("menuUsername").textContent = username;
-                    loginForm.style.display = "none";
-                    webMain.style.display = "block";
-                } else {
-                    alert("Thông tin đăng nhập không đúng!");
-                }
-            } else {
-                alert("Vui lòng nhập thông tin đăng nhập!");
-            }
-        }
-
-        function register() {
-            const username = document.getElementById("newUsername").value;
-            const password = document.getElementById("newPassword").value;
-            if (username && password) {
-                localStorage.setItem("username", username);
-                localStorage.setItem("password", password);
-                showLogin();
-                alert("Tạo tài khoản thành công!");
-            } else {
-                alert("Vui lòng điền đầy đủ thông tin!");
-            }
-        }
-
-        function showRegister() {
-            loginForm.style.display = "none";
-            registerForm.style.display = "block";
-        }
-
-        function showLogin() {
-            registerForm.style.display = "none";
-            loginForm.style.display = "block";
-        }
-
-        function logout() {
-            localStorage.removeItem("loggedIn");
-            localStorage.removeItem("username");
-            localStorage.removeItem("password");
-            loginForm.style.display = "block";
-            webMain.style.display = "none";
         }
 
         function saveContent() {
@@ -356,16 +275,7 @@
         setInterval(updateDateTime, 1000);
 
         window.onload = () => {
-            const loggedIn = localStorage.getItem("loggedIn");
-            if (loggedIn === "true") {
-                const username = localStorage.getItem("username");
-                document.getElementById("menuUsername").textContent = username;
-                loginForm.style.display = "none";
-                webMain.style.display = "block";
-            } else {
-                loginForm.style.display = "block";
-                webMain.style.display = "none";
-            }
+            webMain.style.display = "block";
         };
     </script>
 </body>
