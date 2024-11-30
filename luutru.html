@@ -67,26 +67,49 @@
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
         }
 
-        #history {
+        /* Style cho menu lịch sử */
+        #historyMenu {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -20%);
             width: 80%;
-            margin-top: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 15px;
-            border-radius: 10px;
+            max-width: 500px;
+            background-color: rgba(0, 0, 0, 0.8);
             color: #FFD700;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+        }
+
+        #historyMenu h2 {
+            margin-top: 0;
+        }
+
+        #historyMenu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
             max-height: 200px;
             overflow-y: auto;
         }
 
-        #history ul {
-            padding: 0;
-            margin: 0;
-            list-style: none;
-        }
-
-        #history li {
+        #historyMenu li {
             padding: 5px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
         }
     </style>
 </head>
@@ -97,26 +120,27 @@
     <button onclick="saveContent()">Lưu</button>
     <button onclick="loadContent()">Tải nội dung</button>
     <button onclick="clearContent()">Xóa nội dung</button>
+    <button onclick="toggleHistoryMenu()">Hiển thị lịch sử</button>
     <p id="status"></p>
-    <div id="history">
+
+    <!-- Overlay và menu lịch sử -->
+    <div id="overlay" onclick="toggleHistoryMenu()"></div>
+    <div id="historyMenu">
         <h2>Lịch sử:</h2>
         <ul id="historyList"></ul>
+        <button onclick="toggleHistoryMenu()">Đóng</button>
     </div>
+
     <script>
         // Hàm lưu nội dung vào localStorage và cập nhật lịch sử
         function saveContent() {
             const content = document.getElementById("content").value.trim();
             if (content) {
-                // Lấy lịch sử hiện tại
                 let history = JSON.parse(localStorage.getItem("history")) || [];
-                // Thêm nội dung mới vào đầu lịch sử
                 history.unshift(content);
-                // Giới hạn lịch sử chỉ lưu trữ 10 mục
                 if (history.length > 10) history.pop();
-                // Lưu lịch sử mới vào localStorage
                 localStorage.setItem("history", JSON.stringify(history));
                 document.getElementById("status").innerText = "Nội dung đã được lưu!";
-                // Cập nhật danh sách lịch sử
                 updateHistory();
             } else {
                 document.getElementById("status").innerText = "Không thể lưu nội dung trống!";
@@ -142,16 +166,30 @@
             updateHistory();
         }
 
-        // Hàm cập nhật danh sách lịch sử hiển thị trên giao diện
+        // Hàm cập nhật danh sách lịch sử hiển thị trong menu
         function updateHistory() {
             let history = JSON.parse(localStorage.getItem("history")) || [];
             const historyList = document.getElementById("historyList");
-            historyList.innerHTML = ""; // Xóa danh sách cũ
+            historyList.innerHTML = "";
             history.forEach((item, index) => {
                 let li = document.createElement("li");
                 li.innerText = `${index + 1}. ${item}`;
                 historyList.appendChild(li);
             });
+        }
+
+        // Hàm bật/tắt hiển thị menu lịch sử
+        function toggleHistoryMenu() {
+            const historyMenu = document.getElementById("historyMenu");
+            const overlay = document.getElementById("overlay");
+            if (historyMenu.style.display === "none" || !historyMenu.style.display) {
+                historyMenu.style.display = "block";
+                overlay.style.display = "block";
+                updateHistory();
+            } else {
+                historyMenu.style.display = "none";
+                overlay.style.display = "none";
+            }
         }
 
         // Hiển thị lịch sử khi tải trang
