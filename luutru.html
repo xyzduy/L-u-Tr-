@@ -11,44 +11,105 @@
             padding: 0;
             color: #ffffff;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             background-image: url('https://github.com/xyzduy/L-u-Tr-/raw/main/assets/images/sea.jpg');
             background-size: cover;
             background-position: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .menu-icon {
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #ffffff;
+            width: 250px;
+            height: 100%;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .menu.active {
+            transform: translateX(0);
+        }
+
+        .menu header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #ffffff;
+        }
+
+        .menu h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .menu ul {
+            list-style: none;
+            padding: 15px;
+            margin: 0;
+        }
+
+        .menu ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .container {
-            width: 100%;
-            max-width: 400px;
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             text-align: center;
         }
 
-        h1 {
-            font-size: 1.8em;
-            margin-bottom: 20px;
+        .form-container {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
         }
 
-        input[type="text"], input[type="password"], input[type="email"] {
+        input[type="text"], input[type="password"], input[type="email"], textarea {
             width: 90%;
-            padding: 10px;
+            padding: 15px;
             margin: 10px 0;
             font-size: 16px;
             border-radius: 5px;
             border: none;
-            background-color: rgba(255, 255, 255, 0.8);
+            background-color: rgba(255, 255, 255, 0.9);
             color: #333;
+        }
+
+        textarea {
+            height: 100px;
         }
 
         button {
             width: 90%;
-            padding: 10px;
+            padding: 15px;
             margin: 10px 0;
             font-size: 16px;
             font-weight: bold;
@@ -66,131 +127,64 @@
         }
 
         .message {
-            margin-top: 15px;
             font-size: 0.9em;
             color: #FFD700;
         }
     </style>
 </head>
 <body>
-    <div class="container" id="authContainer">
-        <h1>Đăng nhập</h1>
-        <div id="loginForm">
-            <input type="text" id="loginUsername" placeholder="Tên đăng nhập">
-            <input type="password" id="loginPassword" placeholder="Mật khẩu">
-            <button onclick="login()">Đăng nhập</button>
-            <p class="message">Chưa có tài khoản? <a href="#" onclick="showRegister()">Đăng ký</a></p>
-        </div>
-        <div id="registerForm" style="display: none;">
-            <input type="text" id="registerUsername" placeholder="Tên đăng nhập">
-            <input type="email" id="registerEmail" placeholder="Email">
-            <input type="password" id="registerPassword" placeholder="Mật khẩu">
-            <button onclick="register()">Đăng ký</button>
-            <p class="message">Đã có tài khoản? <a href="#" onclick="showLogin()">Đăng nhập</a></p>
-        </div>
+    <header>
+        <span class="menu-icon" onclick="toggleMenu()">☰</span>
+        <h1>Lưu trữ nội dung</h1>
+    </header>
+
+    <div class="menu" id="menu">
+        <header>
+            <h2>Menu</h2>
+            <button onclick="toggleMenu()">✕</button>
+        </header>
+        <ul>
+            <li><b>Tên người dùng:</b> <span id="menuUsername"></span></li>
+            <li onclick="showHistory()">Lịch sử</li>
+            <li id="dateTime"></li>
+        </ul>
     </div>
 
-    <div class="container" id="mainContainer" style="display: none;">
-        <h1>Xin chào, <span id="userGreeting"></span></h1>
-        <textarea id="content" placeholder="Nhập nội dung của bạn tại đây..."></textarea>
-        <button onclick="saveContent()">Lưu</button>
-        <button onclick="loadContent()">Tải nội dung</button>
-        <button onclick="logout()">Đăng xuất</button>
+    <div class="container">
+        <div class="form-container">
+            <h1>Đăng nhập</h1>
+            <input type="text" id="username" placeholder="Tên đăng nhập">
+            <input type="password" id="password" placeholder="Mật khẩu">
+            <button onclick="login()">Đăng nhập</button>
+            <p class="message">Chưa có tài khoản? <a href="#" onclick="register()">Đăng ký</a></p>
+        </div>
     </div>
 
     <script>
-        // Hàm hiển thị đăng nhập
-        function showLogin() {
-            document.getElementById("loginForm").style.display = "block";
-            document.getElementById("registerForm").style.display = "none";
+        const menu = document.getElementById("menu");
+
+        function toggleMenu() {
+            menu.classList.toggle("active");
         }
 
-        // Hàm hiển thị đăng ký
-        function showRegister() {
-            document.getElementById("loginForm").style.display = "none";
-            document.getElementById("registerForm").style.display = "block";
+        function showHistory() {
+            const history = JSON.parse(localStorage.getItem("history")) || [];
+            alert("Lịch sử của bạn: " + history.join("\n"));
         }
 
-        // Đăng ký tài khoản
-        function register() {
-            const username = document.getElementById("registerUsername").value.trim();
-            const email = document.getElementById("registerEmail").value.trim();
-            const password = document.getElementById("registerPassword").value.trim();
-
-            if (username && email && password) {
-                const users = JSON.parse(localStorage.getItem("users")) || [];
-                const userExists = users.find(user => user.username === username);
-
-                if (userExists) {
-                    alert("Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.");
-                } else {
-                    users.push({ username, email, password });
-                    localStorage.setItem("users", JSON.stringify(users));
-                    alert("Đăng ký thành công! Vui lòng đăng nhập.");
-                    showLogin();
-                }
-            } else {
-                alert("Vui lòng điền đầy đủ thông tin.");
-            }
-        }
-
-        // Đăng nhập tài khoản
         function login() {
-            const username = document.getElementById("loginUsername").value.trim();
-            const password = document.getElementById("loginPassword").value.trim();
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
 
-            const users = JSON.parse(localStorage.getItem("users")) || [];
-            const user = users.find(user => user.username === username && user.password === password);
-
-            if (user) {
-                localStorage.setItem("loggedInUser", username);
-                document.getElementById("userGreeting").innerText = username;
-                showMain();
+            if (username === "user" && password === "123") { 
+                alert("Đăng nhập thành công!");
+                document.getElementById("menuUsername").innerText = username;
             } else {
-                alert("Tên đăng nhập hoặc mật khẩu không chính xác.");
+                alert("Sai tên đăng nhập hoặc mật khẩu.");
             }
         }
 
-        // Hiển thị giao diện chính
-        function showMain() {
-            document.getElementById("authContainer").style.display = "none";
-            document.getElementById("mainContainer").style.display = "block";
-        }
-
-        // Đăng xuất
-        function logout() {
-            localStorage.removeItem("loggedInUser");
-            document.getElementById("mainContainer").style.display = "none";
-            document.getElementById("authContainer").style.display = "block";
-        }
-
-        // Kiểm tra người dùng đã đăng nhập
-        function checkLogin() {
-            const loggedInUser = localStorage.getItem("loggedInUser");
-            if (loggedInUser) {
-                document.getElementById("userGreeting").innerText = loggedInUser;
-                showMain();
-            }
-        }
-
-        // Lưu nội dung
-        function saveContent() {
-            const content = document.getElementById("content").value.trim();
-            if (content) {
-                alert("Nội dung đã được lưu!");
-            } else {
-                alert("Không thể lưu nội dung trống!");
-            }
-        }
-
-        // Tải nội dung
-        function loadContent() {
-            alert("Tính năng này đang được phát triển!");
-        }
-
-        // Gọi kiểm tra khi tải trang
-        checkLogin();
+        document.getElementById("dateTime").innerText = new Date().toLocaleString();
     </script>
 </body>
-    </html>
-    
+</html>
