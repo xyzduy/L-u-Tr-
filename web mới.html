@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lưu trữ nội dung với lịch sử</title>
+    <style>
+        /* Đặt ảnh nền và định dạng chung */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-image: url('./sea.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 80%;
+            height: 200px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: none;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+            resize: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            background-color: #007BFF;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #status {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #FFD700;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        #history {
+            width: 80%;
+            margin-top: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            color: #FFD700;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        #history ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        #history li {
+            padding: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <h1>Lưu trữ nội dung</h1>
+    <textarea id="content" placeholder="Nhập nội dung của bạn tại đây..."></textarea>
+    <br>
+    <button onclick="saveContent()">Lưu</button>
+    <button onclick="loadContent()">Tải nội dung</button>
+    <button onclick="clearContent()">Xóa nội dung</button>
+    <p id="status"></p>
+    <div id="history">
+        <h2>Lịch sử:</h2>
+        <ul id="historyList"></ul>
+    </div>
+    <script>
+        // Hàm lưu nội dung vào localStorage và cập nhật lịch sử
+        function saveContent() {
+            const content = document.getElementById("content").value.trim();
+            if (content) {
+                // Lấy lịch sử hiện tại
+                let history = JSON.parse(localStorage.getItem("history")) || [];
+                // Thêm nội dung mới vào đầu lịch sử
+                history.unshift(content);
+                // Giới hạn lịch sử chỉ lưu trữ 10 mục
+                if (history.length > 10) history.pop();
+                // Lưu lịch sử mới vào localStorage
+                localStorage.setItem("history", JSON.stringify(history));
+                document.getElementById("status").innerText = "Nội dung đã được lưu!";
+                // Cập nhật danh sách lịch sử
+                updateHistory();
+            } else {
+                document.getElementById("status").innerText = "Không thể lưu nội dung trống!";
+            }
+        }
+
+        // Hàm tải nội dung mới nhất từ lịch sử
+        function loadContent() {
+            let history = JSON.parse(localStorage.getItem("history")) || [];
+            if (history.length > 0) {
+                document.getElementById("content").value = history[0];
+                document.getElementById("status").innerText = "Nội dung đã được tải!";
+            } else {
+                document.getElementById("status").innerText = "Không có nội dung nào để tải!";
+            }
+        }
+
+        // Hàm xóa toàn bộ lịch sử
+        function clearContent() {
+            localStorage.removeItem("history");
+            document.getElementById("content").value = "";
+            document.getElementById("status").innerText = "Nội dung và lịch sử đã được xóa!";
+            updateHistory();
+        }
+
+        // Hàm cập nhật danh sách lịch sử hiển thị trên giao diện
+        function updateHistory() {
+            let history = JSON.parse(localStorage.getItem("history")) || [];
+            const historyList = document.getElementById("historyList");
+            historyList.innerHTML = ""; // Xóa danh sách cũ
+            history.forEach((item, index) => {
+                let li = document.createElement("li");
+                li.innerText = `${index + 1}. ${item}`;
+                historyList.appendChild(li);
+            });
+        }
+
+        // Hiển thị lịch sử khi tải trang
+        updateHistory();
+    </script>
+</body>
+</html>
