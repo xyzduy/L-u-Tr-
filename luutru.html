@@ -130,12 +130,20 @@
             font-size: 0.9em;
             color: #FFD700;
         }
+
+        .main-content {
+            display: none;
+        }
+
+        .main-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
     <header>
         <span class="menu-icon" onclick="toggleMenu()">☰</span>
-        <h1>Lưu trữ nội dung</h1>
+        <h1 id="mainTitle" class="main-content">Lưu trữ nội dung</h1>
     </header>
 
     <div class="menu" id="menu">
@@ -151,17 +159,28 @@
     </div>
 
     <div class="container">
-        <div class="form-container">
+        <div class="form-container" id="loginForm">
             <h1>Đăng nhập</h1>
             <input type="text" id="username" placeholder="Tên đăng nhập">
             <input type="password" id="password" placeholder="Mật khẩu">
             <button onclick="login()">Đăng nhập</button>
-            <p class="message">Chưa có tài khoản? <a href="#" onclick="register()">Đăng ký</a></p>
+            <p class="message">Chưa có tài khoản? <a href="#" onclick="showRegisterForm()">Đăng ký</a></p>
+        </div>
+
+        <div class="form-container" id="registerForm" style="display: none;">
+            <h1>Đăng ký</h1>
+            <input type="text" id="registerUsername" placeholder="Tên đăng nhập">
+            <input type="password" id="registerPassword" placeholder="Mật khẩu">
+            <button onclick="register()">Tạo tài khoản</button>
+            <p class="message">Đã có tài khoản? <a href="#" onclick="showLoginForm()">Đăng nhập</a></p>
         </div>
     </div>
 
     <script>
         const menu = document.getElementById("menu");
+        const mainTitle = document.getElementById("mainTitle");
+        const loginForm = document.getElementById("loginForm");
+        const registerForm = document.getElementById("registerForm");
 
         function toggleMenu() {
             menu.classList.toggle("active");
@@ -176,11 +195,39 @@
             const username = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value.trim();
 
-            if (username === "user" && password === "123") { 
+            const storedUsername = localStorage.getItem("username");
+            const storedPassword = localStorage.getItem("password");
+
+            if (username === storedUsername && password === storedPassword) {
                 alert("Đăng nhập thành công!");
-                document.getElementById("menuUsername").innerText = username;
+                mainTitle.classList.add("active");
+                loginForm.style.display = "none";
             } else {
                 alert("Sai tên đăng nhập hoặc mật khẩu.");
+            }
+        }
+
+        function showRegisterForm() {
+            loginForm.style.display = "none";
+            registerForm.style.display = "block";
+        }
+
+        function showLoginForm() {
+            registerForm.style.display = "none";
+            loginForm.style.display = "block";
+        }
+
+        function register() {
+            const username = document.getElementById("registerUsername").value.trim();
+            const password = document.getElementById("registerPassword").value.trim();
+
+            if (username && password) {
+                localStorage.setItem("username", username);
+                localStorage.setItem("password", password);
+                alert("Tạo tài khoản thành công!");
+                showLoginForm();
+            } else {
+                alert("Vui lòng nhập đầy đủ thông tin!");
             }
         }
 
