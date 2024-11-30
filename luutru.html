@@ -28,7 +28,7 @@
 
         .menu-icon {
             cursor: pointer;
-            font-size: 24px;
+            font-size: 30px;
             font-weight: bold;
             color: #FFD700;
         }
@@ -36,14 +36,14 @@
         .menu {
             position: fixed;
             top: 0;
-            right: 0;
-            background-color: rgba(0, 0, 0, 0.9);
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.95);
             color: #fff;
-            width: 250px;
+            width: 300px;
             height: 100%;
-            transform: translateX(100%);
+            transform: translateX(-100%);
             transition: transform 0.3s ease-in-out;
-            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.5);
+            box-shadow: 4px 0 6px rgba(0, 0, 0, 0.5);
         }
 
         .menu.active {
@@ -90,8 +90,10 @@
             display: none;
         }
 
-        textarea, input[type="text"], input[type="password"] {
-            width: 90%;
+        .form-container input,
+        .form-container button,
+        textarea {
+            width: 100%;
             padding: 15px;
             margin: 10px 0;
             font-size: 16px;
@@ -102,11 +104,11 @@
         }
 
         textarea {
-            height: 100px;
+            height: 150px;
         }
 
         button {
-            width: 90%;
+            width: 100%;
             padding: 15px;
             margin: 10px 0;
             font-size: 16px;
@@ -122,6 +124,69 @@
 
         button:hover {
             background-color: #0056b3;
+        }
+
+        #mainTitle {
+            font-size: 2.5em;
+            color: #FFD700;
+            background: linear-gradient(90deg, rgba(255, 0, 150, 1) 0%, rgba(0, 204, 255, 1) 100%);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        #status {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #FFD700;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 80%;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .modal-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .modal-content li {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .close-modal {
+            background-color: #FF4B5C;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -159,11 +224,22 @@
         </div>
     </div>
 
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <h2>Lịch sử của bạn:</h2>
+            <ul id="historyList"></ul>
+            <button class="close-modal" onclick="closeHistory()">Đóng</button>
+        </div>
+    </div>
+
     <script>
         const menu = document.getElementById("menu");
         const mainTitle = document.getElementById("mainTitle");
         const loginForm = document.getElementById("loginForm");
         const webMain = document.getElementById("webMain");
+        const historyModal = document.getElementById("historyModal");
+        const historyList = document.getElementById("historyList");
+        const dateTime = document.getElementById("dateTime");
 
         function toggleMenu() {
             menu.classList.toggle("active");
@@ -171,7 +247,12 @@
 
         function showHistory() {
             const history = JSON.parse(localStorage.getItem("history")) || [];
-            alert("Lịch sử của bạn:\n" + history.join("\n"));
+            historyList.innerHTML = history.map(item => `<li>${item}</li>`).join('');
+            historyModal.classList.add("active");
+        }
+
+        function closeHistory() {
+            historyModal.classList.remove("active");
         }
 
         function login() {
@@ -181,14 +262,18 @@
             const storedUsername = localStorage.getItem("username");
             const storedPassword = localStorage.getItem("password");
 
-            if (username === storedUsername && password === storedPassword) {
-                alert("Đăng nhập thành công!");
-                document.getElementById("menuUsername").innerText = username;
-                mainTitle.style.display = "block";
-                loginForm.style.display = "none";
-                webMain.style.display = "block";
+            if (username && password) {
+                if (username === storedUsername && password === storedPassword) {
+                    localStorage.setItem("loggedIn", "true");
+                    document.getElementById("menuUsername").textContent = username;
+                    loginForm.style.display = "none";
+                    webMain.style.display = "block";
+                    mainTitle.textContent = "Lưu trữ nội dung";
+                } else {
+                    alert("Thông tin đăng nhập không đúng!");
+                }
             } else {
-                alert("Sai tên đăng nhập hoặc mật khẩu!");
+                alert("Vui lòng nhập thông tin đăng nhập!");
             }
         }
 
@@ -206,12 +291,29 @@
         }
 
         function clearContent() {
-            localStorage.removeItem("history");
             document.getElementById("content").value = "";
-            document.getElementById("status").innerText = "Đã xóa toàn bộ nội dung và lịch sử!";
+            document.getElementById("status").innerText = "Nội dung đã được xóa!";
         }
 
-        document.getElementById("dateTime").innerText = new Date().toLocaleString();
+        function updateDateTime() {
+            const now = new Date();
+            dateTime.textContent = now.toLocaleString();
+        }
+
+        setInterval(updateDateTime, 1000);
+
+        window.onload = () => {
+            const loggedIn = localStorage.getItem("loggedIn");
+            if (loggedIn === "true") {
+                const username = localStorage.getItem("username");
+                document.getElementById("menuUsername").textContent = username;
+                loginForm.style.display = "none";
+                webMain.style.display = "block";
+            } else {
+                loginForm.style.display = "block";
+                webMain.style.display = "none";
+            }
+        };
     </script>
 </body>
 </html>
