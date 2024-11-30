@@ -16,6 +16,7 @@
             color: #fff;
             display: flex;
             flex-direction: column;
+            background-color: rgba(0, 0, 0, 0.5);
         }
 
         header {
@@ -58,6 +59,14 @@
             border-bottom: 1px solid #fff;
         }
 
+        .menu header button {
+            background-color: transparent;
+            border: none;
+            font-size: 30px;
+            color: #FFD700;
+            cursor: pointer;
+        }
+
         .menu ul {
             list-style: none;
             padding: 15px;
@@ -78,7 +87,7 @@
         }
 
         .form-container, .main-content {
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.6);
             padding: 20px;
             border-radius: 10px;
             width: 90%;
@@ -89,18 +98,20 @@
         .form-container input,
         .form-container button,
         textarea {
-            width: 100%;
+            width: 100%; /* Giữ chiều rộng bằng nhau cho tất cả các phần tử */
             padding: 15px;
             margin: 10px 0;
             font-size: 16px;
             border-radius: 5px;
-            border: none;
-            background-color: rgba(255, 255, 255, 0.9);
-            color: #333;
+            border: 2px solid rgba(0, 123, 255, 0.5); /* Viền xanh cho input và button */
+            background-color: rgba(255, 255, 255, 0.2); /* Nền trong suốt nhẹ */
+            color: #fff;
+            box-sizing: border-box; /* Đảm bảo padding không làm thay đổi kích thước phần tử */
         }
 
         textarea {
-            height: 150px;
+            height: 150px; /* Cấu hình chiều cao cho textarea */
+            background-color: rgba(255, 255, 255, 0.1); /* Nền textarea trong suốt */
         }
 
         button {
@@ -109,31 +120,16 @@
             margin: 10px 0;
             font-size: 16px;
             font-weight: bold;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            border: 2px solid rgba(0, 123, 255, 0.5);
+            background-color: rgba(0, 123, 255, 0.2);
             color: #fff;
-            background-color: #007BFF;
+            cursor: pointer;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
             transition: background-color 0.3s ease;
         }
 
         button:hover {
-            background-color: #0056b3;
-        }
-
-        #mainTitle {
-            font-size: 2.5em;
-            color: #FFD700;
-            background: linear-gradient(90deg, rgba(255, 0, 150, 1) 0%, rgba(0, 204, 255, 1) 100%);
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-
-        #status {
-            margin-top: 10px;
-            font-size: 1em;
-            color: #FFD700;
+            background-color: rgba(0, 123, 255, 0.4);
         }
 
         .modal {
@@ -185,12 +181,44 @@
             margin-top: 20px;
         }
 
+        .history-item {
+            display: block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            word-break: break-word;
+            position: relative;
+        }
+
+        .history-item .more {
+            font-size: 14px;
+            color: #FFD700;
+            cursor: pointer;
+            position: absolute;
+            bottom: 5px;
+            right: 0;
+        }
+
+        .history-item.full {
+            white-space: normal;
+        }
+
+        .logout-button {
+            background-color: #FF4B5C;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <header>
         <span class="menu-icon" onclick="toggleMenu()">☰</span>
-        <h1 id="mainTitle" class="main-content">Lưu trữ nội dung</h1>
     </header>
 
     <div class="menu" id="menu">
@@ -199,9 +227,8 @@
             <button onclick="toggleMenu()">✕</button>
         </header>
         <ul>
-            <li><b>Tên người dùng:</b> <span id="menuUsername">Chưa đăng nhập</span></li>
             <li onclick="showHistory()">Lịch sử</li>
-            <li id="dateTime"></li>
+            <li onclick="clearHistory()">Xóa lịch sử</li>
         </ul>
     </div>
 
@@ -224,11 +251,9 @@
 
     <script>
         const menu = document.getElementById("menu");
-        const mainTitle = document.getElementById("mainTitle");
         const webMain = document.getElementById("webMain");
         const historyModal = document.getElementById("historyModal");
         const historyList = document.getElementById("historyList");
-        const dateTime = document.getElementById("dateTime");
 
         function toggleMenu() {
             menu.classList.toggle("active");
@@ -239,10 +264,28 @@
             historyList.innerHTML = "";
             history.forEach((item, index) => {
                 let li = document.createElement("li");
-                li.innerText = `${index + 1}. ${item}`;
+                let date = new Date(item.timestamp);
+                li.classList.add("history-item");
+                li.innerHTML = `
+                    <strong>${item.content}</strong>
+                    <br><span>${date.toLocaleString()}</span>
+                    <span class="more" onclick="toggleFullText(this.parentElement)">...</span>
+                `;
                 historyList.appendChild(li);
             });
             historyModal.classList.add("active");
+        }
+
+        function toggleFullText(element) {
+            const fullContent = element.previousElementSibling;
+            const parent = element.parentElement;
+            if (parent.classList.contains("full")) {
+                parent.classList.remove("full");
+                fullContent.textContent = "...";
+            } else {
+                parent.classList.add("full");
+                fullContent.textContent = "Ẩn bớt";
+            }
         }
 
         function closeHistory() {
@@ -250,33 +293,30 @@
         }
 
         function saveContent() {
-            const content = document.getElementById("content").value.trim();
-            if (content) {
-                let history = JSON.parse(localStorage.getItem("history")) || [];
-                history.unshift(content);
-                if (history.length > 10) history.pop();
-                localStorage.setItem("history", JSON.stringify(history));
-                document.getElementById("status").innerText = "Nội dung đã được lưu!";
-            } else {
-                document.getElementById("status").innerText = "Không thể lưu nội dung trống!";
+            const content = document.getElementById("content").value;
+            if (!content) {
+                document.getElementById("status").textContent = "Vui lòng nhập nội dung!";
+                return;
             }
+            let history = JSON.parse(localStorage.getItem("history")) || [];
+            const timestamp = new Date().getTime();
+            history.push({ content, timestamp });
+            localStorage.setItem("history", JSON.stringify(history));
+            document.getElementById("status").textContent = "Đã lưu!";
         }
 
         function clearContent() {
             document.getElementById("content").value = "";
-            document.getElementById("status").innerText = "Nội dung đã được xóa!";
+            document.getElementById("status").textContent = "";
         }
 
-        function updateDateTime() {
-            const now = new Date();
-            dateTime.textContent = now.toLocaleString();
+        function clearHistory() {
+            localStorage.removeItem("history");
+            historyList.innerHTML = "";
+            document.getElementById("status").textContent = "Lịch sử đã được xóa!";
+            closeHistory();
         }
-
-        setInterval(updateDateTime, 1000);
-
-        window.onload = () => {
-            webMain.style.display = "block";
-        };
     </script>
 </body>
 </html>
+    
