@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lưu trữ nội dung Responsive</title>
+    <title>Lưu trữ nội dung</title>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -13,39 +13,44 @@
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            justify-content: flex-start;
-            overflow-y: auto;
             background-image: url('https://github.com/xyzduy/L-u-Tr-/raw/main/assets/images/sea.jpg');
             background-size: cover;
             background-position: center;
         }
 
-        h1 {
-            font-size: 2em;
-            margin: 20px 0;
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            text-align: center;
         }
 
-        textarea {
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="password"], input[type="email"] {
             width: 90%;
-            max-width: 600px;
-            height: 150px;
-            margin-bottom: 10px;
-            font-size: 16px;
-            border-radius: 10px;
-            border: none;
             padding: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
             background-color: rgba(255, 255, 255, 0.8);
             color: #333;
-            resize: none;
         }
 
         button {
-            padding: 10px 20px;
-            margin: 5px;
-            font-size: 14px;
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
             font-weight: bold;
             border: none;
             border-radius: 5px;
@@ -60,165 +65,132 @@
             background-color: #0056b3;
         }
 
-        #status {
-            margin-top: 10px;
-            font-size: 1em;
+        .message {
+            margin-top: 15px;
+            font-size: 0.9em;
             color: #FFD700;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-        }
-
-        #menuIcon {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 1000;
-            color: #FFD700;
-            font-size: 24px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        }
-
-        #menu {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 200px;
-            background-color: rgba(0, 0, 0, 0.9);
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-            display: none;
-            z-index: 999;
-            overflow: hidden;
-        }
-
-        #menu h3 {
-            margin: 0;
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #FFD700;
-            text-align: center;
-            font-size: 16px;
-        }
-
-        #menu ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        #menu ul li {
-            padding: 10px;
-            color: #fff;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-            text-align: center;
-        }
-
-        #menu ul li:last-child {
-            border-bottom: none;
-        }
-
-        #menu ul li:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            textarea {
-                height: 120px;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
-
-            button {
-                font-size: 12px;
-                padding: 8px 16px;
-            }
-        }
-
-        @media (orientation: landscape) and (max-height: 450px) {
-            body {
-                flex-direction: column;
-                justify-content: flex-start;
-                overflow-y: scroll;
-            }
-
-            #menu {
-                top: 5px;
-                right: 5px;
-            }
         }
     </style>
 </head>
 <body>
-    <h1>Lưu trữ nội dung</h1>
-    <textarea id="content" placeholder="Nhập nội dung của bạn tại đây..."></textarea>
-    <br>
-    <button onclick="saveContent()">Lưu</button>
-    <button onclick="loadContent()">Tải nội dung</button>
-    <button onclick="clearTextArea()">Xóa nội dung</button>
-    <p id="status"></p>
+    <div class="container" id="authContainer">
+        <h1>Đăng nhập</h1>
+        <div id="loginForm">
+            <input type="text" id="loginUsername" placeholder="Tên đăng nhập">
+            <input type="password" id="loginPassword" placeholder="Mật khẩu">
+            <button onclick="login()">Đăng nhập</button>
+            <p class="message">Chưa có tài khoản? <a href="#" onclick="showRegister()">Đăng ký</a></p>
+        </div>
+        <div id="registerForm" style="display: none;">
+            <input type="text" id="registerUsername" placeholder="Tên đăng nhập">
+            <input type="email" id="registerEmail" placeholder="Email">
+            <input type="password" id="registerPassword" placeholder="Mật khẩu">
+            <button onclick="register()">Đăng ký</button>
+            <p class="message">Đã có tài khoản? <a href="#" onclick="showLogin()">Đăng nhập</a></p>
+        </div>
+    </div>
 
-    <!-- Biểu tượng menu -->
-    <div id="menuIcon" onclick="toggleMenu()">☰</div>
-
-    <!-- Menu tùy chọn -->
-    <div id="menu">
-        <h3 id="userName">Xin chào: <span>Người dùng</span></h3>
-        <ul>
-            <li onclick="showHistory()">Lịch sử</li>
-            <li id="dateDisplay">Ngày: <span></span></li>
-        </ul>
+    <div class="container" id="mainContainer" style="display: none;">
+        <h1>Xin chào, <span id="userGreeting"></span></h1>
+        <textarea id="content" placeholder="Nhập nội dung của bạn tại đây..."></textarea>
+        <button onclick="saveContent()">Lưu</button>
+        <button onclick="loadContent()">Tải nội dung</button>
+        <button onclick="logout()">Đăng xuất</button>
     </div>
 
     <script>
+        // Hàm hiển thị đăng nhập
+        function showLogin() {
+            document.getElementById("loginForm").style.display = "block";
+            document.getElementById("registerForm").style.display = "none";
+        }
+
+        // Hàm hiển thị đăng ký
+        function showRegister() {
+            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("registerForm").style.display = "block";
+        }
+
+        // Đăng ký tài khoản
+        function register() {
+            const username = document.getElementById("registerUsername").value.trim();
+            const email = document.getElementById("registerEmail").value.trim();
+            const password = document.getElementById("registerPassword").value.trim();
+
+            if (username && email && password) {
+                const users = JSON.parse(localStorage.getItem("users")) || [];
+                const userExists = users.find(user => user.username === username);
+
+                if (userExists) {
+                    alert("Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.");
+                } else {
+                    users.push({ username, email, password });
+                    localStorage.setItem("users", JSON.stringify(users));
+                    alert("Đăng ký thành công! Vui lòng đăng nhập.");
+                    showLogin();
+                }
+            } else {
+                alert("Vui lòng điền đầy đủ thông tin.");
+            }
+        }
+
+        // Đăng nhập tài khoản
+        function login() {
+            const username = document.getElementById("loginUsername").value.trim();
+            const password = document.getElementById("loginPassword").value.trim();
+
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            const user = users.find(user => user.username === username && user.password === password);
+
+            if (user) {
+                localStorage.setItem("loggedInUser", username);
+                document.getElementById("userGreeting").innerText = username;
+                showMain();
+            } else {
+                alert("Tên đăng nhập hoặc mật khẩu không chính xác.");
+            }
+        }
+
+        // Hiển thị giao diện chính
+        function showMain() {
+            document.getElementById("authContainer").style.display = "none";
+            document.getElementById("mainContainer").style.display = "block";
+        }
+
+        // Đăng xuất
+        function logout() {
+            localStorage.removeItem("loggedInUser");
+            document.getElementById("mainContainer").style.display = "none";
+            document.getElementById("authContainer").style.display = "block";
+        }
+
+        // Kiểm tra người dùng đã đăng nhập
+        function checkLogin() {
+            const loggedInUser = localStorage.getItem("loggedInUser");
+            if (loggedInUser) {
+                document.getElementById("userGreeting").innerText = loggedInUser;
+                showMain();
+            }
+        }
+
+        // Lưu nội dung
         function saveContent() {
             const content = document.getElementById("content").value.trim();
             if (content) {
-                let history = JSON.parse(localStorage.getItem("history")) || [];
-                history.unshift(content);
-                if (history.length > 10) history.pop();
-                localStorage.setItem("history", JSON.stringify(history));
-                document.getElementById("status").innerText = "Nội dung đã được lưu!";
+                alert("Nội dung đã được lưu!");
             } else {
-                document.getElementById("status").innerText = "Không thể lưu nội dung trống!";
+                alert("Không thể lưu nội dung trống!");
             }
         }
 
+        // Tải nội dung
         function loadContent() {
-            let history = JSON.parse(localStorage.getItem("history")) || [];
-            if (history.length > 0) {
-                document.getElementById("content").value = history[0];
-                document.getElementById("status").innerText = "Nội dung đã được tải!";
-            } else {
-                document.getElementById("status").innerText = "Không có nội dung nào để tải!";
-            }
+            alert("Tính năng này đang được phát triển!");
         }
 
-        function clearTextArea() {
-            document.getElementById("content").value = "";
-            document.getElementById("status").innerText = "Nội dung đã được xóa!";
-        }
-
-        function toggleMenu() {
-            const menu = document.getElementById("menu");
-            menu.style.display = menu.style.display === "block" ? "none" : "block";
-        }
-
-        function showHistory() {
-            let history = JSON.parse(localStorage.getItem("history")) || [];
-            alert("Lịch sử:\n" + history.join("\n"));
-        }
-
-        document.getElementById("dateDisplay").querySelector("span").innerText = new Date().toLocaleDateString();
+        // Gọi kiểm tra khi tải trang
+        checkLogin();
     </script>
 </body>
-</html>
+    </html>
+    
